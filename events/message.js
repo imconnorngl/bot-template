@@ -1,7 +1,6 @@
 const chalk = require('chalk')
 
 const { prefix } = require('../config.json')
-const xpGenerator = require('../utils/methods/xpGenerator.js')
 
 module.exports = async (bot, message) => {
 
