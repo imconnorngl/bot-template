@@ -1,25 +1,41 @@
-(async () => {
-    const init = require('./utils/init');
-    const { token } = require('./config.json')
-    const Discord = require('discord.js');
+const Discord = require('discord.js');
 
-    const bot = await init(new Discord.Client())
+const assets = require('./config/assets.json');
+const config = require('./config/config.json');
+const { colors, credentials } = config
+const allFiles = require('./utils/allFiles');
+
+(async () => {
+    const bot = new Discord.Client({ intents: ["GUILDS", "GUILD_MEMBERS", "GUILD_MESSAGES", "GUILD_MESSAGE_REACTIONS", "GUILD_EMOJIS"] });
+
+    bot.colors = colors;
+    bot.assets = assets;
 
     bot.commands = new Discord.Collection();
 
-    const eventFiles = bot.getAllFiles('./events')
-    for (const file of eventFiles) {
-        if (!file.endsWith(".js")) return;
-        const event = require(`./${file}`);
-        bot.on(file.split('\\')[1].slice(0, -3), event.bind(null, bot)); // If running on a windows system replace / with \\
-    }
+    allFiles('./utils/extenders')
+        .filter(file => file.endsWith('.js'))
+        .forEach(file => {
+            file = file.replace(/\\/g, "/")
+            require(`./${file}`);
+        })
 
-    const commandFiles = bot.getAllFiles('./commands')
-    for (const file of commandFiles) {
-        if (!file.endsWith(".js")) return;
-        let commands = require(`./${file}`);
-        bot.commands.set(commands.name, commands);
-    }
+    allFiles('./events')
+        .filter(file => file.endsWith('.js'))
+        .forEach(file => {
+            file = file.replace(/\\/g, "/")
+            const event = require(`./${file}`);
+            bot.on(file.split('/').pop().split('.')[0], event.bind(null, bot))
+        })
 
-    bot.login(token);
+    allFiles('./commands')
+        .filter(file => file.endsWith('.js'))
+        .forEach(file => {
+            file = file.replace(/\\/g, "/")
+            const command = require(`./${file}`);
+            const c = new command(bot)
+            bot.commands.set(c.name, c);
+        })
+
+    bot.login(credentials.token);
 })()

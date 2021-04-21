@@ -1,0 +1,15 @@
+{
+    "credentials": {
+        "token": "ODM0MzI4NjQ5NTI0MTgzMDUw.YH_TGw.OIlRYP6L9Jpt1Vyvm4tPO7PJr3I"
+    },
+    "developers": [
+        "237989560041078792"
+	],
+    "prefix": "!",
+    "colors": {
+        "error": "#FDB904",
+		"warning": "#FFFF55",
+		"success": "#43b481",
+		"main": "#000000"
+    }
+}

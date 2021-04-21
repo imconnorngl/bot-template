@@ -1,0 +1,10 @@
+{
+    "icons": {
+        "check": "https://cdn.discordapp.com/emojis/737967744976289802.png?v=1",
+        "cross": "https://cdn.discordapp.com/emojis/746448664347803648.png?v=1",
+        "error": "https://statsify.net/cdn/assets/error.gif",
+        "info": "https://statsify.net/cdn/assets/info.png",
+        "online": "https://statsify.net/cdn/assets/online.png",
+        "offline": "https://statsify.net/cdn/assets/offline.png"
+    }
+}
