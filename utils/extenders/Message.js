@@ -58,6 +58,7 @@ Message.prototype.menu = async function (choices, options) {
         submitted: `You have successfully selected the following option:`,
         cancelled: `You have successfully cancelled the selection.`,
         timeout: `You did not complete the selection in time.`,
+        permitted: [],
         time: 15000,
         max: 1,
         cancellable: true,
@@ -98,7 +99,7 @@ Message.prototype.menu = async function (choices, options) {
 
     choice.emotes.forEach(e => msg.react(e).catch(err => err))
 
-    const filter = (reaction, user) => choice.emotes.includes(reaction.emoji.id ? reaction.emoji.id : reaction.emoji.name) && user.id == this.author.id
+    const filter = (reaction, user) => choice.emotes.includes(reaction.emoji.id ? reaction.emoji.id : reaction.emoji.name) && (options.permitted?.length ? options.permitted.includes(user.id) : user.id == this.author.id)
     const collected = await msg.awaitReactions(filter, { max: options.max, time: options.time }).catch(err => err)
 
     await msg.reactions.removeAll()
