@@ -6,8 +6,8 @@ const ms = require("ms")
 const { developers } = require('../../config/config.json')
 
 module.exports = class extends Command {
-    constructor(bot) {
-        super(bot, {
+    constructor() {
+        super({
             name: "ping",
             aliases: ["invite"],
             description: "Sends information and statistics about the bot.",
@@ -25,8 +25,7 @@ module.exports = class extends Command {
      */
     async run(message, args, bot) {
         const embed = new Discord.MessageEmbed()
-            .setAuthor(`Championship Series - Information`, bot.user.displayAvatarURL())
-            .setDescription(`:link: You can invite the bot [here](https://discord.com/api/oauth2/authorize?client_id=830469682863013930&permissions=8&scope=bot).`)
+            .setAuthor(`${bot.user.username} - Information`, bot.user.displayAvatarURL())
             .addFields({
                 name: `Credits`,
                 value: `:desktop: ${(await Promise.all(developers.map(async d => `\`${(await bot.users.fetch(d))?.tag}\``))).join(", ")}`,
@@ -63,19 +62,6 @@ module.exports = class extends Command {
             }, {
                 name: `Users`,
                 value: `:busts_in_silhouette: \`${bot.guilds.cache.reduce((a, c) => a + c.memberCount, 0).toLocaleString()}\``,
-                options: {
-                    inline: true
-                }
-            }, {
-                name: `Registered`,
-                value: `:ballot_box_with_check: \`${0}\``,
-                options: {
-                    inline: true
-                }
-            },
-            {
-                name: `Teams`,
-                value: `:family: \`${0}\``,
                 options: {
                     inline: true
                 }

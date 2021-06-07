@@ -4,8 +4,8 @@ const Command = require('../../utils/structures/Command');
 const util = require('util');
 
 module.exports = class extends Command {
-    constructor(bot) {
-        super(bot, {
+    constructor() {
+        super({
             name: "eval",
             aliases: [],
             description: "Allows our development team to evalutate provided code.",

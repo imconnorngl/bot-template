@@ -33,7 +33,7 @@ const allFiles = require('./utils/allFiles');
         .forEach(file => {
             file = file.replace(/\\/g, "/")
             const command = require(`./${file}`);
-            const c = new command(bot)
+            const c = new command()
             bot.commands.set(c.name, c);
         })
 

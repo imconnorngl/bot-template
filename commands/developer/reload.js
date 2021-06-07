@@ -5,8 +5,8 @@ const path = require('path')
 const allFiles = require('../../utils/allFiles');
 
 module.exports = class extends Command {
-    constructor(bot) {
-        super(bot, {
+    constructor() {
+        super({
             name: "reload",
             aliases: ["r", "rl"],
             description: "Allows our development team to reload a command on the bot.",
@@ -34,7 +34,7 @@ module.exports = class extends Command {
                 try {
                     const startTime = Date.now()
                     delete require.cache[require.resolve(formattedPath)];
-                    const newCommand = new (require(formattedPath))(bot)
+                    const newCommand = new (require(formattedPath))()
                     bot.commands.set(newCommand.name, newCommand);
 
                     let embed = new Discord.MessageEmbed()

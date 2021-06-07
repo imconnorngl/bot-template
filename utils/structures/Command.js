@@ -1,9 +1,6 @@
-const Discord = require('discord.js');
-
 module.exports = class {
     /**
      * 
-     * @param {Discord.Client} bot 
      * @param {{
      *  name: string,
      *  description?: string,
@@ -13,9 +10,8 @@ module.exports = class {
      *  example?: string
      * }} options 
      */
-    constructor(bot, options) {
-        this.bot = bot;
-        this.options = {
+    constructor(options) {
+        options = {
             name: "",
             description: "",
             aliases: null,
@@ -30,8 +26,8 @@ module.exports = class {
             ...options
         };
 
-        Object.assign(this, this.options)
-        this.name = this.options.name.toLowerCase();
-        this.aliases = this.options.aliases?.map(c => c.toLowerCase());
+        Object.assign(this, options)
+        this.name = this.name.toLowerCase();
+        this.aliases = this.aliases?.map(c => c.toLowerCase());
     }
 }

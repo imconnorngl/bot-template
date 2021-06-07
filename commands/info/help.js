@@ -4,8 +4,8 @@ const Command = require('../../utils/structures/Command');
 const { prettify } = require('../../utils/misc')
 
 module.exports = class extends Command {
-    constructor(bot) {
-        super(bot, {
+    constructor() {
+        super({
             name: "help",
             aliases: [],
             description: "Shows information on all the commands within the bot.",
