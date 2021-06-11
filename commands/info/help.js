@@ -22,7 +22,7 @@ module.exports = class extends Command {
      * @param {Discord.Client} bot 
      */
     async run(message, args, bot) {
-        const commands = Array.from(bot.commands).map(command => command[1].options)
+        const commands = Array.from(bot.commands).map(command => command[1])
 
         if (!args[0]) {
             var categories = {}
