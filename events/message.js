@@ -1,7 +1,6 @@
 const Discord = require('discord.js');
 
 const { prefix, developers } = require('../config/config.json');
-const Levelling = require('../utils/levelling')
 
 /**
  * 
