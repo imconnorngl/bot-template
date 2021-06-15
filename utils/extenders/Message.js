@@ -27,7 +27,7 @@ Message.prototype.error = function (description, image) {
     }
 
     this.reply({
-        embed,
+        embeds: [embed],
         allowedMentions: { repliedUser: false }
     });
 }
@@ -85,12 +85,12 @@ Message.prototype.menu = async function (choices, options) {
             options.prompt.setDescription(`${options.prompt.description || `Select from the following options:`}\n\n${choice.string}`)
             if(options.message) {
                 var msg = await options.message.edit({
-                    embed: options.prompt,
+                    embeds: [options.prompt],
                     allowedMentions: options.allowedMentions
                 })
             } else {
                 var msg = await this.reply({
-                    embed: options.prompt,
+                    embeds: [options.prompt],
                     allowedMentions: options.allowedMentions
                 })
             }
@@ -109,7 +109,7 @@ Message.prototype.menu = async function (choices, options) {
         if (typeof options.timeout === "object") {
             if (options.prompt.type) {
                 var msg = await msg.edit({
-                    embed: options.timeout,
+                    embeds: [options.timeout],
                     allowedMentions: options.allowedMentions
                 })
             }
@@ -123,7 +123,7 @@ Message.prototype.menu = async function (choices, options) {
         if (typeof options.cancelled === "object") {
             if (options.cancelled.type) {
                 var msg = await msg.edit({
-                    embed: options.cancelled,
+                    embeds: [options.cancelled],
                     allowedMentions: options.allowedMentions
                 })
             }
@@ -139,7 +139,7 @@ Message.prototype.menu = async function (choices, options) {
         if (options.submitted.type) {
             options.submitted.setDescription(`${options.submitted.description || `You have successfully selected the following option:`}\n\n${ch.map(c => `${this.client.emojis.cache.get(c.emote) || c.emote} - \`${c.name}\``).join("\n")}`)
             var msg = await msg.edit({
-                embed: options.submitted,
+                embeds: [options.submitted],
                 allowedMentions: options.allowedMentions
             })
         }
@@ -171,7 +171,7 @@ Message.prototype.post = async function (content, options) {
 
     if (typeof content === "object" && !content.pages && !Array.isArray(content)) {
         if (content.type) return this.reply({
-            embed: content,
+            embeds: [content],
             allowedMentions: options.allowedMentions
         })
 
@@ -211,7 +211,7 @@ Message.prototype.post = async function (content, options) {
         })
 
         sending = content.pages.map(page => ({
-            embed: page,
+            embeds: [page],
             files: content.files || [],
             allowedMentions: {
                 repliedUser: false
