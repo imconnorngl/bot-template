@@ -1,4 +1,4 @@
-const { Message, MessageEmbed, APIMessage, StringResolveable, MessageAttachment } = require('discord.js');
+const { Message, MessageEmbed, APIMessage, StringResolveable, MessageAttachment, MessageActionRow, MessageButton } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
 
@@ -51,101 +51,55 @@ Message.prototype.error = function (description, image) {
  * }} options 
  */
 
-Message.prototype.menu = async function (choices, options) {
+Message.prototype.menu = function (choices, options) {
     options = {
         message: undefined,
-        prompt: `Select from the following options:`,
-        submitted: `You have successfully selected the following option:`,
-        cancelled: `You have successfully cancelled the selection.`,
-        timeout: `You did not complete the selection in time.`,
-        permitted: [],
+        question: `Which option would you like to pick?`,
+        prompt: `Select from the following`,
+        access: [],
         time: 15000,
-        max: 1,
-        cancellable: true,
         allowedMentions: {
             repliedUser: false
         },
         ...options
     }
 
-    if(options.cancellable) choices.push({ emote: "❌", name: "Cancel", value: null })
+    return new Promise(async res => {
+        const rows = Array.from({ length: Math.ceil(choices.length / 3) }, (_, i) => choices.slice(i * 3, (i + 1) * 3)).map(r => {
+            return new MessageActionRow()
+                .addComponents(r.map(p => {
+                    return new MessageButton()
+                        .setEmoji(p.emote)
+                        .setLabel(p.short || "")
+                        .setStyle("SECONDARY")
+                        .setCustomID(p.id)
+                        .setDisabled(p.disabled)
+                }))
+        })
 
-    var choice = { 
-        string: choices.map(c => `${this.client.emojis.cache.get(c.emote) || c.emote} - \`${c.name}\``).join("\n"), 
-        emotes: choices.map(c => c.emote)
-    }
-
-    if (typeof options.prompt === "string") {
-        if(options.message) var msg = await options.message.edit(`${options.prompt}\n\n${choice.string}`, options);
-        else var msg = await this.reply(`${options.prompt}\n\n${choice.string}`, options);
-    } 
-
-    if (typeof options.prompt === "object") {
-        if (options.prompt.type) {
-            options.prompt.setDescription(`${options.prompt.description || `Select from the following options:`}\n\n${choice.string}`)
-            if(options.message) {
-                var msg = await options.message.edit({
-                    embeds: [options.prompt],
-                    allowedMentions: options.allowedMentions
-                })
-            } else {
-                var msg = await this.reply({
-                    embeds: [options.prompt],
-                    allowedMentions: options.allowedMentions
-                })
-            }
-        }
-    }
-
-    choice.emotes.forEach(e => msg.react(e).catch(err => err))
-
-    const filter = (reaction, user) => choice.emotes.includes(reaction.emoji.id ? reaction.emoji.id : reaction.emoji.name) && (options.permitted?.length ? options.permitted.includes(user.id) : user.id == this.author.id)
-    const collected = await msg.awaitReactions(filter, { max: options.max, time: options.time }).catch(err => err)
-
-    await msg.reactions.removeAll()
-    if(collected.size < 1){
-        if (typeof options.timeout === "string") var msg = await msg.edit(options.timeout, options);
-
-        if (typeof options.timeout === "object") {
-            if (options.prompt.type) {
-                var msg = await msg.edit({
-                    embeds: [options.timeout],
-                    allowedMentions: options.allowedMentions
-                })
-            }
-        }
-    
-        return { message: msg, choice: [] }
-    }
-    if(collected.some(c => c.emoji.name == "❌") && options.cancellable){
-        if (typeof options.cancelled === "string") var msg = await msg.edit(options.cancelled, options);
-
-        if (typeof options.cancelled === "object") {
-            if (options.cancelled.type) {
-                var msg = await msg.edit({
-                    embeds: [options.cancelled],
-                    allowedMentions: options.allowedMentions
-                })
-            }
+        const content = {
+            content: [
+                `**${options.question}**`,
+                `*${options.prompt}*`,
+                "",
+                ...choices.map(r => `${r.emote} - \`${r.prompt}\``)
+            ].join("\n"),
+            components: rows,
+            allowedMentions: options.allowedMentions
         }
 
-        return { message: msg, choice: [] }
-    }
+        if (options.message) var msg = await options.message.edit(content)
+        else var msg = await this.reply(content)
 
-    const ch = collected.map(co => choices.find(ch => ch.emote == (co.emoji.id ? co.emoji.id : co.emoji.name)))
-    if (typeof options.submitted === "string") var msg = await msg.edit(`${options.submitted}\n\n${ch.map(c => `${this.client.emojis.cache.get(c.emote) || c.emote} - \`${c.name}\``).join("\n")}`, options);
-
-    if (typeof options.submitted === "object") {
-        if (options.submitted.type) {
-            options.submitted.setDescription(`${options.submitted.description || `You have successfully selected the following option:`}\n\n${ch.map(c => `${this.client.emojis.cache.get(c.emote) || c.emote} - \`${c.name}\``).join("\n")}`)
-            var msg = await msg.edit({
-                embeds: [options.submitted],
-                allowedMentions: options.allowedMentions
-            })
+        const filter = (interaction) => {
+            interaction.deferUpdate()
+            return choices.map(p => p.id).includes(interaction.customID) && (!options.access || options.access.includes(interaction.user.id))
         }
-    }
 
-    return { message: msg, choice: ch.map(c => c.value) }
+        msg.awaitMessageComponentInteraction(filter, { time: options.time })
+            .then(interaction => res({ success: true, choice: interaction.customID, message: msg }))
+            .catch(_ => res({ success: false, choice: null, message: msg }))
+    })
 }
 
 /**
