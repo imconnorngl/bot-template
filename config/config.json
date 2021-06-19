@@ -1,6 +1,7 @@
 {
     "credentials": {
-        "token": ""
+        "token": "",
+        "mongo": ""
     },
     "developers": [
         "237989560041078792"
