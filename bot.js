@@ -5,7 +5,7 @@ const config = require('./config/config.json');
 const { colors, credentials } = config
 const allFiles = require('./utils/allFiles');
 
-const model = require('./utils/database/models/model')
+const model = require('./utils/database/models/model');
 
 (async () => {
     const bot = new Discord.Client({ intents: ["GUILDS", "GUILD_MEMBERS", "GUILD_MESSAGES", "GUILD_MESSAGE_REACTIONS", "GUILD_EMOJIS"] });
