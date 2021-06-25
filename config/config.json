@@ -7,9 +7,9 @@
 	],
     "prefix": "!",
     "colors": {
-        "error": "#FDB904",
-		"warning": "#FFFF55",
-		"success": "#43b481",
-		"main": "#000000"
+        "error": "#E61B05",
+	"warning": "#FFFF55",        
+	"success": "#43b481",
+	"main": "#000000"
     }
 }
