@@ -34,76 +34,6 @@ Message.prototype.error = function (description, image) {
 
 /**
  * 
- * @param {[
- * {
- *  emote: string
- *  name: string
- *  value: any
- * }
- * ]} choices 
- * @param {{
- *  submitted?: string
- *  cancelled?: string
- *  timeout?: string
- *  cancellable?: boolean
- *  time?: number
- *  max?: number
- * }} options 
- */
-
-Message.prototype.menu = function (choices, options) {
-    options = {
-        message: undefined,
-        question: `Which option would you like to pick?`,
-        prompt: `Select from the following`,
-        access: [],
-        time: 15000,
-        allowedMentions: {
-            repliedUser: false
-        },
-        ...options
-    }
-
-    return new Promise(async res => {
-        const rows = Array.from({ length: Math.ceil(choices.length / 3) }, (_, i) => choices.slice(i * 3, (i + 1) * 3)).map(r => {
-            return new MessageActionRow()
-                .addComponents(r.map(p => {
-                    return new MessageButton()
-                        .setEmoji(p.emote)
-                        .setLabel(p.short || "")
-                        .setStyle("SECONDARY")
-                        .setCustomID(p.id)
-                        .setDisabled(p.disabled)
-                }))
-        })
-
-        const content = {
-            content: [
-                `**${options.question}**`,
-                `*${options.prompt}*`,
-                "",
-                ...choices.map(r => `${r.emote} - \`${r.prompt}\``)
-            ].join("\n"),
-            components: rows,
-            allowedMentions: options.allowedMentions
-        }
-
-        if (options.message) var msg = await options.message.edit(content)
-        else var msg = await this.reply(content)
-
-        const filter = (interaction) => {
-            interaction.deferUpdate()
-            return choices.map(p => p.id).includes(interaction.customID) && (!options.access || options.access.includes(interaction.user.id))
-        }
-
-        msg.awaitMessageComponentInteraction(filter, { time: options.time })
-            .then(interaction => res({ success: true, choice: interaction.customID, message: msg }))
-            .catch(_ => res({ success: false, choice: null, message: msg }))
-    })
-}
-
-/**
- * 
  * @param {StringResolveable | APIMessage} content 
  * @param {{
  *  page?: number,
@@ -179,36 +109,29 @@ Message.prototype.post = async function (content, options) {
 
     if (sending.length === 1) return;
 
-    const stopFilter = (reaction, user) => reaction.emoji.name === "⏹️" && user.id == this.author.id;
-    const backwardsFilter = (reaction, user) => reaction.emoji.name === "◀️" && user.id == this.author.id;
-    const forwardsFilter = (reaction, user) => reaction.emoji.name === "▶️" && user.id == this.author.id;
+    const filter = (reaction, user) => ["◀️", "▶️", "⏹️"].includes(reaction.emoji.name) && user.id == this.author.id;
+    const collector = msg.createReactionCollector({ filter, time });
 
-    const backwards = msg.createReactionCollector(backwardsFilter, { time });
-    const forwards = msg.createReactionCollector(forwardsFilter, { time });
-    const stop = msg.createReactionCollector(stopFilter, { time });
+    collector.on("collect", async r => {
+        switch (r.emoji.name) {
+            case "◀️":
+                if (page === 1) page = sending.length;
+                else page--;
+                break;
+            case "▶️":
+                if (page === sending.length) page = 1;
+                else page++;
+                break;
+            case "⏹️":
+                return msg.reactions.removeAll()
+        }
 
-    stop.on("collect", r => msg.reactions.removeAll());
-    stop.on("end", r => msg.reactions.removeAll().catch(e => e));
-
-    forwards.on("collect", r => {
-        if (page === sending.length) page = 1;
-        else page++;
-
-        sending[page - 1].content = sending[page - 1].content || "\u200b"
-
-        msg.edit(sending[page - 1]);
         r.users.remove(this.author.id)
+        sending[page - 1].content = sending[page - 1].content || "\u200b"
+        msg.edit(sending[page - 1]);
     });
 
-    backwards.on("collect", r => {
-        if (page === 1) page = sending.length;
-        else page--
-
-        sending[page - 1].content = sending[page - 1].content || "\u200b"
-
-        msg.edit(sending[page - 1]);
-        r.users.remove(this.author.id)
-    });
+    collector.on("end", _ => msg.reactions.removeAll().catch(e => e));
 
     await msg.react("◀️");
     await msg.react("▶️");
