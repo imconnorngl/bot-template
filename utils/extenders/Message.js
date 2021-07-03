@@ -5,6 +5,10 @@ const path = require('path');
 const { colors } = require('../../config/config.json');
 const assets = require('../../config/assets.json');
 
+Message.prototype.reacts = async function (...reactions) {
+    reactions.forEach(r => this.react(r))
+}
+
 /**
  * 
  * @param {string} description 
@@ -117,9 +121,11 @@ Message.prototype.post = async function (content, options) {
             case "◀️":
                 if (page === 1) page = sending.length;
                 else page--;
+                break;
             case "▶️":
                 if (page === sending.length) page = 1;
                 else page++;
+                break;
             case "⏹️":
                 return msg.reactions.removeAll()
         }
@@ -131,7 +137,5 @@ Message.prototype.post = async function (content, options) {
 
     collector.on("end", _ => msg.reactions.removeAll().catch(e => e));
 
-    await msg.react("◀️");
-    await msg.react("▶️");
-    await msg.react("⏹️");
+    await msg.reacts("◀️", "▶️", "⏹️");
 }
