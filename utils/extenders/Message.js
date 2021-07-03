@@ -117,11 +117,9 @@ Message.prototype.post = async function (content, options) {
             case "◀️":
                 if (page === 1) page = sending.length;
                 else page--;
-                break;
             case "▶️":
                 if (page === sending.length) page = 1;
                 else page++;
-                break;
             case "⏹️":
                 return msg.reactions.removeAll()
         }
