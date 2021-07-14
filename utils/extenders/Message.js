@@ -55,7 +55,10 @@ Message.prototype.post = async function (content, options) {
         ...options
     }
 
-    if (typeof content === "string") return this.reply(content, options);
+    if (typeof content === "string") return this.reply({
+        content: content, 
+        ...options
+    });
 
     if (typeof content === "object" && !content.pages && !Array.isArray(content)) {
         if (content.type) return this.reply({
