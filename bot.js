@@ -26,6 +26,7 @@ const allFiles = require('./utils/allFiles');
             file = file.replace(/\\/g, "/")
             const event = require(`./${file}`);
             bot.on(file.split('/').pop().split('.')[0], event.bind(null, bot))
+            delete require.cache[require.resolve(`./${file}`)];
         })
 
     allFiles('./commands')
@@ -35,6 +36,7 @@ const allFiles = require('./utils/allFiles');
             const command = require(`./${file}`);
             const c = new command()
             bot.commands.set(c.name, c);
+            delete require.cache[require.resolve(`./${file}`)];
         })
 
     bot.login(credentials.token);

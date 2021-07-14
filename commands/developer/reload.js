@@ -33,9 +33,9 @@ module.exports = class extends Command {
                 var formattedPath = path.join(__dirname, '..', '..', file).replace(/\\/g, '\\\\')
                 try {
                     const startTime = Date.now()
-                    delete require.cache[require.resolve(formattedPath)];
                     const newCommand = new (require(formattedPath))()
                     bot.commands.set(newCommand.name, newCommand);
+                    delete require.cache[require.resolve(formattedPath)];
 
                     let embed = new Discord.MessageEmbed()
                         .setTitle(`Command Reloaded`)
