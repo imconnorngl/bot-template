@@ -26,10 +26,10 @@ module.exports = class extends Command {
         const embed = new Discord.MessageEmbed()
 
         if (!args[0]) {
-            const categories = {}
-            commands.forEach(c => {
-                categories[c.category] ? categories[c.category].push(c) : categories[c.category] = [c]
-            })
+            const categories = commands.reduce((a, c) => {
+                a[c.category] = [...(a[c.category] || []), c]
+                return a
+            }, {})
 
             embed.setTitle(`Command Help`)
             embed.setDescription(`For more information on each command do \`${message.prefix}help <command>\`. This will show additional information such as aliases, description, usage and access.`)
