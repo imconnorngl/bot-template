@@ -8,7 +8,7 @@ const { prefix, developers } = require('../config/config.json');
  * @param {Discord.Message} message 
  */
 module.exports = async (bot, message) => {
-    if (message.channel.type !== 'text') return;
+    if (!["GUILD_TEXT", "GUILD_NEWS"].includes(message.channel.type)) return;
     if (message.author.bot) return;
 
     message.prefix = prefix

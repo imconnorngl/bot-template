@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "chalk": "^4.1.0",
-    "discord.js": "^13.0.0-dev.56b5b7e.1625313788",
+    "discord.js": "^13.0.0-dev.98c6078.1626221017",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.33",
     "ms": "^2.1.3",

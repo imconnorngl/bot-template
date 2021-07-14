@@ -4,12 +4,12 @@
     },
     "developers": [
         "237989560041078792"
-	],
+    ],
     "prefix": "!",
     "colors": {
         "error": "#E61B05",
-	"warning": "#FFFF55",        
-	"success": "#43b481",
-	"main": "#000000"
+        "warning": "#FFFF55",
+        "success": "#43b481",
+        "main": "#000000"
     }
 }
