@@ -23,7 +23,7 @@ module.exports = class extends Command {
      * @param {Discord.Client} bot 
      */
     async run(message, args, bot) {
-        let code = args.join(" ").startsWith("\`\`\`") ? args.join(" ").replace(/\`\`\`\n|\`\`\`\S.*\n|\`\`\`/g, "") : args.join(" ")
+        let code = args.join(" ")
         if (!code.includes('return')) code = `return ${code}`
 
         const embed = new Discord.MessageEmbed()
