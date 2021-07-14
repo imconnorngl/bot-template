@@ -24,15 +24,16 @@ module.exports = class extends Command {
     async run(message, args, bot) {
         const commands = Array.from(bot.commands).map(command => command[1])
 
+        const embed = new Discord.MessageEmbed()
+
         if (!args[0]) {
-            var categories = {}
+            const categories = {}
             commands.forEach(c => {
                 categories[c.category] ? categories[c.category].push(c) : categories[c.category] = [c]
             })
 
-            const embed = new Discord.MessageEmbed()
-                .setTitle(`Command Help`)
-                .setDescription(`For more information on each command do \`${message.prefix}help <command>\`. This will show additional information such as aliases, description, usage and access.`)
+            embed.setTitle(`Command Help`)
+            embed.setDescription(`For more information on each command do \`${message.prefix}help <command>\`. This will show additional information such as aliases, description, usage and access.`)
 
             Object.keys(categories).forEach(c => {
                 embed.addFields({
@@ -41,16 +42,13 @@ module.exports = class extends Command {
                     inline: false
                 })
             })
-
-            return message.post(embed)
         } else {
             const command = commands.find(c => c.name == args[0] || c.aliases.includes(args[0]))
             if (!command) return message.error(`Could not locate a command with the name or aliase of \`${args[0]}\`. Try doing \`${message.prefix}help\` for a full list of commands.`)
 
-            const embed = new Discord.MessageEmbed()
-                .setTitle(`Command Help - ${prettify(command.name)}`)
-                .setDescription(`${command.description || "No Description Provided."}\n\u200b`)
-                .addFields({
+            embed.setTitle(`Command Help - ${prettify(command.name)}`)
+            embed.setDescription(`${command.description || "No Description Provided."}\n\u200b`)
+            embed.addFields({
                     name: `Aliases`,
                     value: command.aliases.length ? command.aliases.map(a => `\`${a}\``).join(", ") : `\u200b`
                 }, {
@@ -68,8 +66,8 @@ module.exports = class extends Command {
                 name: `Access`,
                 value: command.devOnly ? `\`•\` Developers` : command.access.filter(a => message.guild.roles.cache.get(a)).map(a => `\`•\` ${message.guild.roles.cache.get(a).name}`).join("\n")
             })
-
-            return message.post(embed)
         }
+
+        return message.post(embed)
     }
 }
