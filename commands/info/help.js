@@ -22,8 +22,7 @@ module.exports = class extends Command {
      * @param {Discord.Client} bot 
      */
     async run(message, args, bot) {
-        const commands = Array.from(bot.commands).map(command => command[1])
-
+        const commands = bot.commands.array()
         const embed = new Discord.MessageEmbed()
 
         if (!args[0]) {
