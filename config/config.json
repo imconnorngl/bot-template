@@ -11,5 +11,6 @@
 	"warning": "#FFFF55",        
 	"success": "#43b481",
 	"main": "#000000"
-    }
+    },
+    "mongo": ""
 }
