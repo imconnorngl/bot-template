@@ -6,7 +6,7 @@ const { colors, credentials } = config
 const allFiles = require('./utils/allFiles');
 
 (async () => {
-    const bot = new Discord.Client({ intents: ["GUILDS", "GUILD_MEMBERS", "GUILD_MESSAGES", "GUILD_MESSAGE_REACTIONS", "GUILD_EMOJIS"] });
+    const bot = new Discord.Client({ intents: ["GUILDS", "GUILD_MEMBERS", "GUILD_MESSAGES", "GUILD_MESSAGE_REACTIONS", "GUILD_EMOJIS_AND_STICKERS"] });
 
     bot.colors = colors;
     bot.assets = assets;
