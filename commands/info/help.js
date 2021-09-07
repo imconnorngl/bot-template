@@ -24,6 +24,7 @@ module.exports = class extends Command {
     async run(message, args, bot) {
         const commands = [...bot.commands.values()]
         const embed = new Discord.MessageEmbed()
+            .setColor(bot.colors.main)
 
         if (!args[0]) {
             const categories = commands.reduce((a, c) => {
@@ -48,18 +49,18 @@ module.exports = class extends Command {
             embed.setTitle(`Command Help - ${prettify(command.name)}`)
             embed.setDescription(`${command.description || "No Description Provided."}\n\u200b`)
             embed.addFields({
-                    name: `Aliases`,
-                    value: command.aliases.length ? command.aliases.map(a => `\`${a}\``).join(", ") : `\u200b`
-                }, {
-                    name: `Usage`,
-                    value: `\`${message.prefix}${command.name}${command.usage ? ` ${command.usage}` : ``}\``
-                }, {
-                    name: `Example`,
-                    value: `\`${message.prefix}${command.name}${command.example ? ` ${command.example}` : ``}\``
-                }, {
-                    name: `Category`,
-                    value: `\`${prettify(command.category)}\``
-                })
+                name: `Aliases`,
+                value: command.aliases.length ? command.aliases.map(a => `\`${a}\``).join(", ") : `\u200b`
+            }, {
+                name: `Usage`,
+                value: `\`${message.prefix}${command.name}${command.usage ? ` ${command.usage}` : ``}\``
+            }, {
+                name: `Example`,
+                value: `\`${message.prefix}${command.name}${command.example ? ` ${command.example}` : ``}\``
+            }, {
+                name: `Category`,
+                value: `\`${prettify(command.category)}\``
+            })
 
             if (command.devOnly || command.access.length) embed.addFields({
                 name: `Access`,
