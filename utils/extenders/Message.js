@@ -20,10 +20,10 @@ Message.prototype.error = function (description, image) {
         .setColor(colors.error)
         .setThumbnail(assets.icons.error);
 
+    var attachment;
     if (image) {
         if (fs.existsSync(image)) {
-            const attachment = new MessageAttachment(image, path.basename(image))
-            embed.attachFiles([attachment])
+            attachment = new MessageAttachment(image, path.basename(image))
             embed.setImage(`attachment://${path.basename(image)}`)
         } else {
             embed.setImage(image)
@@ -32,7 +32,8 @@ Message.prototype.error = function (description, image) {
 
     this.reply({
         embeds: [embed],
-        allowedMentions: { repliedUser: false }
+        allowedMentions: { repliedUser: false },
+        ...(attachment ? { files: [attachment] } : {})
     });
 }
 
