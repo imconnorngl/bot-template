@@ -1,9 +1,10 @@
 const Discord = require('discord.js');
 
 const assets = require('./config/assets.json');
-const config = require('./config/config.json');
-const { colors, credentials } = config
+const { colors } = require('./config/config.json');
 const allFiles = require('./utils/allFiles');
+
+require('dotenv').config();
 
 (async () => {
     const bot = new Discord.Client({ intents: ["GUILDS", "GUILD_MEMBERS", "GUILD_MESSAGES", "GUILD_MESSAGE_REACTIONS", "GUILD_EMOJIS_AND_STICKERS"] });
@@ -39,5 +40,5 @@ const allFiles = require('./utils/allFiles');
             delete require.cache[require.resolve(`./${file}`)];
         })
 
-    bot.login(credentials.token);
+    bot.login(process.env.DISCORD_BOT_TOKEN);
 })()

@@ -25,7 +25,7 @@ module.exports = class extends Command {
      */
     async run(message, args, bot) {
         const embed = new Discord.MessageEmbed()
-            .setAuthor(`${bot.user.username} - Information`, bot.user.displayAvatarURL())
+            .setAuthor({ name: `${bot.user.username} - Information`, iconURL: bot.user.avatarURL() })
             .addFields({
                 name: `Credits`,
                 value: `:desktop: ${(await Promise.all(developers.map(async d => `\`${(await bot.users.fetch(d))?.tag}\``))).join(", ")}`,

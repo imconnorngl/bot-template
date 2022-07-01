@@ -30,13 +30,13 @@ module.exports = class extends Command {
             .setColor(bot.colors.main);
 
         try {
-            embed.setAuthor(`Successful Evaluation`)
+            embed.setAuthor({ name: `Successful Evaluation` })
             embed.addFields({
                 name: `:outbox_tray: Output:`,
                 value: `\`\`\`js\n${util.inspect(await eval(`(async () => {${code}})()`)).split("").slice(0, 1000).join("")}\n\`\`\``
             })
         } catch (e) {
-            embed.setAuthor(`Unsuccessful Evaluation`)
+            embed.setAuthor({ name: `Unsuccessful Evaluation` })
             embed.addFields({
                 name: `:outbox_tray: Error:`,
                 value: `\`\`\`js\n${e}\n\`\`\``
