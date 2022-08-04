@@ -1,30 +1,27 @@
-const { EmbedBuilder } = require('discord.js');
-const CommandHandler = require('../../utils/structures/CommandHandler');
+const { Client, Interaction, InteractionType, EmbedBuilder } = require('discord.js');
+const InteractionHandler = require('../utils/structures/InteractionHandler');
 
 const ms = require("ms");
 
-const { developers } = require('../../config/config.json');
+const { developers } = require('../config/config.json');
 
-module.exports = class extends CommandHandler {
+module.exports = class extends InteractionHandler {
     constructor() {
         super({
             name: "ping",
-            aliases: ["invite"],
-            description: "Sends information and statistics about the client.",
-            usage: "",
-            example: "",
-            category: "info"
+            type: InteractionType.ApplicationCommand,
+            description: "Pong!"
         })
     }
 
     /**
      * 
-     * @param {Discord.Client} client 
-     * @param {Discord.Message} message 
-     * @param {string[]} args 
+     * @param {Client} client 
+     * @param {Interaction} interaction 
      */
-    async run(client, message, args) {
+    async run(client, interaction) {
         const embed = new EmbedBuilder()
+            .setAuthor({ name: `${client.user.username} - Information`, iconURL: client.user.avatarURL() })
             .addFields({
                 name: `Credits`,
                 value: `:desktop: ${(await Promise.all(developers.map(async d => `\`${(await client.users.fetch(d))?.tag}\``))).join(", ")}`,
@@ -67,6 +64,6 @@ module.exports = class extends CommandHandler {
             })
             .setColor(client.colors.main);
 
-        return message.post(embed);
+        return interaction.post(embed);
     }
 }

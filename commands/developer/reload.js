@@ -1,15 +1,15 @@
-const Discord = require('discord.js');
-const Command = require('../../utils/structures/Command');
+const { Client, Message, EmbedBuilder } = require('discord.js');
+const CommandHandler = require('../../utils/structures/CommandHandler');
 
 const path = require('path')
 const allFiles = require('../../utils/allFiles');
 
-module.exports = class extends Command {
+module.exports = class extends CommandHandler {
     constructor() {
         super({
             name: "reload",
             aliases: ["r", "rl"],
-            description: "Allows our development team to reload a command on the bot.",
+            description: "Allows our development team to reload a command on the client.",
             usage: "[command/alias]",
             example: "help",
             category: "developer",
@@ -19,13 +19,13 @@ module.exports = class extends Command {
 
     /**
      * 
-     * @param {Discord.Message} message 
+     * @param {Client} client 
+     * @param {Message} message 
      * @param {string[]} args 
-     * @param {Discord.Client} bot 
      */
-    async run(message, args, bot) {
+    async run(client, message, args) {
         if(!args.length) return message.error(`You did not include a command to reload.`)
-        const command = bot.commands.get(args[0]?.toLowerCase()) || bot.commands.find(cmd => cmd.aliases && cmd.aliases.includes(args[0]?.toLowerCase()));
+        const command = client.commands.get(args[0]?.toLowerCase()) || client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(args[0]?.toLowerCase()));
         if (!command) return message.error(`There is no command with name or alias \`${args[0]?.toLowerCase()}\``);
 
         allFiles('./commands').forEach(file => {
@@ -34,17 +34,17 @@ module.exports = class extends Command {
                 try {
                     const startTime = Date.now()
                     const newCommand = new (require(formattedPath))()
-                    bot.commands.set(newCommand.name, newCommand);
+                    client.commands.set(newCommand.name, newCommand);
                     delete require.cache[require.resolve(formattedPath)];
 
-                    let embed = new Discord.MessageEmbed()
+                    let embed = new EmbedBuilder()
                         .setTitle(`Command Reloaded`)
                         .addFields(
                             { name: `Command`, value: `\`${command.name}\`` },
                             { name: `Aliases`, value: `\`${(command.aliases || []).length ? command.aliases.join(", ") : "No Aliases."}\`` },
                             { name: `Description`, value: `\`${command.description || "No Description."}\`` },
                             { name: `Reload time`, value: `\`${Date.now() - startTime} ms\`` })
-                        .setColor(bot.colors.main)
+                        .setColor(client.colors.main)
                     return message.post(embed)
 
                 } catch (error) {

@@ -1,14 +1,5 @@
-const { MessageEmbed, MessageEmbedFooter } = require('discord.js');
+const { EmbedBuilder } = require('discord.js');
 const { handleValue } = require('../misc');
-
-/**
- * 
- * @param {MessageEmbedFooter} footer 
- */
-MessageEmbed.prototype.setFooter = function (footer) {
-    this.footer = footer;
-    return this;
-}
 
 /**
  * @typedef {({
@@ -28,7 +19,7 @@ MessageEmbed.prototype.setFooter = function (footer) {
  * 
  * @param {Field} field 
  */
-MessageEmbed.prototype.addField = function (field) {
+EmbedBuilder.prototype.addField = function (field) {
     this.fields = this.fields || []
 
     const options = {
@@ -82,7 +73,8 @@ MessageEmbed.prototype.addField = function (field) {
         inline: typeof inline === "boolean" ? inline : true
     }
 
-    this.fields.push(obj);
+    const fields = this.data.fields ?? [];
+    this.data.fields = [...fields, obj]
 
     return this;
 }
@@ -92,7 +84,7 @@ MessageEmbed.prototype.addField = function (field) {
  * @param  {...Field} fields 
  */
 
-MessageEmbed.prototype.addFields = function (...fields) {
+EmbedBuilder.prototype.addFields = function (...fields) {
     fields
         .filter(field => field)
         .forEach(field => this.addField(field))
@@ -105,7 +97,7 @@ MessageEmbed.prototype.addFields = function (...fields) {
  * @param {MessageEmbed} page 
  */
 
-MessageEmbed.prototype.addPage = function (page) {
+EmbedBuilder.prototype.addPage = function (page) {
     this.pages = this.pages || []
     this.pages.push(page)
 
@@ -117,7 +109,7 @@ MessageEmbed.prototype.addPage = function (page) {
  * @param  {...MessageEmbed} pages 
  */
 
-MessageEmbed.prototype.addPages = function (...pages) {
+EmbedBuilder.prototype.addPages = function (...pages) {
     this.pages = this.pages || [];
     pages.forEach(page => this.pages.push(page))
 

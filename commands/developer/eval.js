@@ -1,9 +1,9 @@
-const Discord = require('discord.js');
-const Command = require('../../utils/structures/Command');
+const { Client, Message, EmbedBuilder } = require('discord.js');
+const CommandHandler = require('../../utils/structures/CommandHandler');
 
 const util = require('util');
 
-module.exports = class extends Command {
+module.exports = class extends CommandHandler {
     constructor() {
         super({
             name: "eval",
@@ -18,16 +18,16 @@ module.exports = class extends Command {
 
     /**
      * 
-     * @param {Discord.Message} message 
-     * @param {string[]} args 
-     * @param {Discord.Client} bot 
+     * @param {Client} client 
+     * @param {Message} message 
+     * @param {string[]} args
      */
-    async run(message, args, bot) {
+    async run(client, message, args) {
         let code = args.join(" ")
         if (!code.includes('return')) code = `return ${code}`
 
-        const embed = new Discord.MessageEmbed()
-            .setColor(bot.colors.main);
+        const embed = new EmbedBuilder()
+            .setColor(client.colors.main);
 
         try {
             embed.setAuthor({ name: `Successful Evaluation` })

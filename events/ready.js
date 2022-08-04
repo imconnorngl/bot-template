@@ -1,11 +1,19 @@
-const Discord = require('discord.js');
+const { Client, InteractionType } = require('discord.js');
 const Chalk = require('chalk')
 const moment = require('moment');
 
 /**
  * 
- * @param {Discord.Client} bot 
+ * @param {Client} client 
  */
-module.exports = (bot) => {
-    console.log(Chalk.blueBright(Chalk.bold(`Successfully launched ${bot.user.tag} with ${bot.guilds.cache.size || 0} guilds at ${new moment().format('LTS')}`)))
+module.exports = (client) => {
+    console.log(Chalk.blueBright(Chalk.bold(`Successfully launched ${client.user.tag} with ${client.guilds.cache.size || 0} guilds at ${new moment().format('LTS')}`)))
+
+    client.guilds.cache.forEach(async guild => {
+        await guild.commands.set(
+            client.interactions
+                .filter(i => i.type == InteractionType.ApplicationCommand)
+                .map(i => i.data)
+        )
+    });
 }

@@ -1,52 +1,43 @@
-const { Message, APIMessage, StringResolveable, EmbedBuilder, AttachmentBuilder, ActionRowBuilder, ButtonBuilder } = require('discord.js');
 const fs = require('fs');
 const path = require('path');
+const { BaseInteraction, EmbedBuilder, AttachmentBuilder, ActionRowBuilder, ButtonBuilder } = require('discord.js');
 
 const { colors } = require('../../config/config.json');
 const assets = require('../../config/assets.json');
 
-Message.prototype.reacts = async function (...reactions) {
-    reactions.forEach(r => this.react(r))
-}
-
-/**
- * 
- * @param {string} description 
- * @param {string} image 
- */
-Message.prototype.error = function (description, image) {
+BaseInteraction.prototype.error = async function (description, image) {
     const embed = new EmbedBuilder()
         .setDescription(description)
-        .setColor(colors.error)
+        .setColor(colors.warning)
         .setThumbnail(assets.icons.error);
 
-    var attachment;
     if (image) {
         if (fs.existsSync(image)) {
-            attachment = new AttachmentBuilder(image, path.basename(image))
+            const attachment = new AttachmentBuilder(image, path.basename(image))
+            embed.attachFiles([attachment])
             embed.setImage(`attachment://${path.basename(image)}`)
         } else {
             embed.setImage(image)
         }
     }
 
-    this.reply({
+    const payload = {
         embeds: [embed],
+        components: [],
         allowedMentions: { repliedUser: false },
-        ...(attachment ? { files: [attachment] } : {})
-    });
+        ephemeral: true
+    }
+
+    if (this.replied) {
+        if (this.content) payload["content"] = "\u200b"
+        this.editReply(payload).catch(err => err)
+    } else {
+        this.reply(payload).catch(err => err)
+    }
 }
 
-/**
- * 
- * @param {StringResolveable | APIMessage} content 
- * @param {{
- *  page?: number,
- *  time?: number
- * }} options 
- */
 
-Message.prototype.post = async function (content, options) {
+BaseInteraction.prototype.post = async function (content, options) {
     options = {
         page: 1,
         time: 120000,
@@ -75,13 +66,6 @@ Message.prototype.post = async function (content, options) {
 
     if (content.pages) {
         let pages = content.pages.map((page, index) => {
-            Object.keys(content.data).forEach(key => {
-                if (typeof key !== 'string' || key === 'pages') return;
-                if (!page.data[key]) page.data[key] = content.data[key]
-                if (key === 'author' && content.data[key] && content.data[key].iconURL && !page.data[key].iconURL) page.data[key].iconURL = content.data[key].iconURL
-                if (key === 'fields') page.data[key].unshift(content.data[key])
-            });
-
             if (content.footer) {
                 const { text } = content.footer;
                 if (text) {
@@ -93,6 +77,13 @@ Message.prototype.post = async function (content, options) {
             } else {
                 page.setFooter({ text: `『 Page ${index + 1}/${content.pages.length} 』` })
             }
+
+            Object.keys(content.data).forEach(key => {
+                if (typeof key !== 'string' || key === 'pages') return;
+                if (!page.data[key]) page.data[key] = content.data[key]
+                if (key === 'author' && content.data[key] && content.data[key].iconURL && !page.data[key].iconURL) page.data[key].iconURL = content.data[key].iconURL
+                if (key === 'fields') page.data[key].unshift(content.data[key])
+            });
 
             return page
         });
@@ -129,7 +120,7 @@ Message.prototype.post = async function (content, options) {
         if (sending.length === 1) return;
 
         const collector = msg.createMessageComponentCollector({
-            filter: (interaction) => interaction.user.id === this.author.id,
+            filter: (interaction) => interaction.user.id === this.user.id,
             time: time
         });
 
@@ -149,12 +140,12 @@ Message.prototype.post = async function (content, options) {
             }
 
             sending[page - 1].content = sending[page - 1].content || "\u200b"
-            msg.edit(sending[page - 1]);
+            this.editReply(sending[page - 1]);
         });
 
         collector.on("end", _ => {
             sending[page - 1].components = []
-            msg.edit(sending[page - 1]);
+            this.editReply(sending[page - 1]);
         });
     }
 }
