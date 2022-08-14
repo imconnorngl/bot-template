@@ -1,4 +1,4 @@
-const { Client, Message, ChannelType } = require('discord.js');
+const { Client, Message, ChannelType, PermissionsBitField } = require('discord.js');
 const Chalk = require('chalk');
 const moment = require('moment');
 
@@ -24,10 +24,10 @@ module.exports = async (client, message) => {
 
     if (!commandHandler) return;
     
-    if (commandHandler.channels?.whitelist && !commandHandler.channels?.whitelist.includes(message.channel.id) && !developers.includes(message.author.id) && !message.member.permissions.has("ADMINISTRATOR")) return;
-    else if (commandHandler.channels?.blacklist && commandHandler.channels?.blacklist.includes(message.channel.id) && !developers.includes(message.author.id) && !message.member.permissions.has("ADMINISTRATOR")) return;
+    if (commandHandler.channels?.whitelist && !commandHandler.channels?.whitelist.includes(message.channel.id) && !developers.includes(message.author.id) && !message.member.permissions.has(PermissionsBitField.Flags.Administrator)) return;
+    else if (commandHandler.channels?.blacklist && commandHandler.channels?.blacklist.includes(message.channel.id) && !developers.includes(message.author.id) && !message.member.permissions.has(PermissionsBitField.Flags.Administrator)) return;
 
-    if (commandHandler.access.length && !message.member.roles.cache.some(r => commandHandler.access.includes(r.id)) && !developers.includes(message.author.id) && !message.member.permissions.has("ADMINISTRATOR")) return message.error(`This command is locked to the following roles:\n\n${command.access.filter(a => message.guild.roles.cache.get(a)).map(a => `\`•\` ${message.guild.roles.cache.get(a).name}`).join("\n")}`)
+    if (commandHandler.access.length && !message.member.roles.cache.some(r => commandHandler.access.includes(r.id)) && !developers.includes(message.author.id) && !message.member.permissions.has(PermissionsBitField.Flags.Administrator)) return message.error(`This command is locked to the following roles:\n\n${commandHandler.access.filter(a => message.guild.roles.cache.get(a)).map(a => `\`•\` ${message.guild.roles.cache.get(a).name}`).join("\n")}`)
     if (commandHandler.devOnly && !developers.includes(message.author.id)) return message.error(`This command requires you to be part of our development team.`);
     
     console.log(Chalk.blue(`[CMD] [${new moment().format('LTS')}] ${message.author.tag} in #${message.channel.name} used: ${message.content}`));
