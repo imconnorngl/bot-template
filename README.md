@@ -8,9 +8,9 @@ Here's a simple guide to get started with this bot template.
 
 ## Create your bot
 * Go to the [Discord Application Page](https://discord.com/developers/applications).
-* Crete a **New Application**.
+* Create a **New Application**.
 * Click **Bot**, **Add Bot**, then click **Yes, do it**.
-* Visit `https://discord.com/oauth2/authorize?client_id=APP_ID&permissions=8&scope=bot%20applications`, replacing **APP_ID** with the **Application ID** from the app page, to add the bot to your server.
+* Visit `https://discord.com/oauth2/authorize?client_id=APP_ID&permissions=8&scope=bot%20applications.commands`, replacing **APP_ID** with the **Application ID** from the app page, to add the bot to your server.
 * Copy your bot's **Token** and keep it for later.
 
 ## Intents
